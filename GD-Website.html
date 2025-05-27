@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Dorking Tool & Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #ffffff; /* White text for contrast on dark canvas */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: transparent;
+            position: relative;
+            z-index: 1;
+        }
+        
+        canvas#animationCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background-color: #121212;
+        }
+        
+        header, .card, .tab, .tabcontent, footer {
+            position: relative;
+            z-index: 2;
+        }
+        
+        header {
+            background-color: transparent; /* Animation visible */
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h1, h2, h3 {
+            color: #ffffff;
+        }
+        
+        header h1 {
+            color: white;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: transparent;
+        }
+        
+        .card {
+            background-color: transparent; /* Animation visible */
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(255,255,255,0.2); /* White shadow for contrast */
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: transparent; /* Animation visible */
+        }
+        
+        table, th, td {
+            border: 1px solid rgba(255, 255, 255, 0.8); /* White border */
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            color: #ffffff; /* White text */
+        }
+        
+        th {
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly opaque for distinction */
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.1); /* Subtle hover effect */
+        }
+        
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-form select, .search-form input, .search-form textarea {
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly opaque for input clarity */
+            color: #ffffff;
+        }
+        
+        .search-form select option {
+            background-color: #2c3e50; /* Dark background for dropdown options */
+            color: white;
+        }
+        
+        .search-form button {
+            padding: 10px 15px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .search-form button:hover {
+            background-color: #1a252f;
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .warning {
+            background-color: transparent; /* Animation visible */
+            color: #ffeb3b; /* Yellow for warning to stand out */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeb3b; /* Yellow border for visibility */
+        }
+        
+        .tab {
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background-color: rgba(241, 241, 241, 0.2); /* Semi-transparent for tab names */
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+            color: #ffffff;
+        }
+        
+        .tab button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab button.active {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8); /* White border */
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: transparent; /* Animation visible */
+            color: #ffffff; /* White text for readability */
+        }
+        
+        .tabcontent code {
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly opaque for code blocks */
+            color: #ffffff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: transparent; /* Animation visible */
+            color: white;
+            border-radius: 5px;
+        }
+        
+        a {
+            color: #42a5f5; /* Light blue for links to stand out */
+        }
+        
+        a:hover {
+            color: #90caf9;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="animationCanvas"></canvas>
+
+    <header>
+        <h1>Google Dorking Tool & Educational Guide</h1>
+        <p>Learn about advanced search techniques and security implications</p>
+    </header>
+
+    <div class="container">
+        <div class="card warning">
+            <h3>⚠️ Important Notice</h3>
+            <p>Google dorking is a technique used by security professionals for legitimate research purposes. Using these techniques to access protected or private information without authorization is illegal and unethical. This website is for educational purposes only.</p>
+        </div>
+
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'Introduction')">Introduction</button>
+            <button class="tablinks" onclick="openTab(event, 'Operators')">Search Operators</button>
+            <button class="tablinks" onclick="openTab(event, 'GHDB')">Google Hacking DB</button>
+            <button class="tablinks" onclick="openTab(event, 'Tool')">Dorking Tool</button>
+        </div>
+
+        <div id="Introduction" class="tabcontent" style="display: block;">
+            <h2>What is Google Dorking?</h2>
+            <p>Google dorking, also known as Google hacking, is an advanced search technique that uses specific search operators and parameters to find information that might not be readily available through simple searches. Security professionals use these techniques to discover potential vulnerabilities, while malicious actors might exploit them to find sensitive information.</p>
+            
+            <h3>How Does it Work?</h3>
+            <p>Google dorking relies on specialized search operators that Google provides to refine search results. By combining these operators with specific keywords, users can target particular types of content, file types, or websites.</p>
+            
+            <h3>Common Uses</h3>
+            <ul>
+                <li>Security research and vulnerability assessments</li>
+                <li>Finding specific file types (PDFs, Excel sheets, etc.)</li>
+                <li>Discovering exposed directories or configurations</li>
+                <li>Identifying sensitive information inadvertently exposed online</li>
+            </ul>
+            
+            <h3>Ethical Considerations</h3>
+            <p>While Google dorking itself is not illegal, using it to access protected information without authorization or exploit vulnerabilities is both illegal and unethical. Always:</p>
+            <ul>
+                <li>Obtain permission before testing systems you don't own</li>
+                <li>Report vulnerabilities through proper channels</li>
+                <li>Don't access or download sensitive information</li>
+                <li>Follow responsible disclosure practices</li>
+            </ul>
+        </div>
+
+        <div id="Operators" class="tabcontent">
+            <h2>Common Google Dorking Operators</h2>
+            <p>These search operators can be combined to create powerful search queries.</p>
+            
+            <table>
+                <tr>
+                    <th>Operator</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>site:</td>
+                    <td>Restricts results to a specific domain</td>
+                    <td>site:example.com password</td>
+                </tr>
+                <tr>
+                    <td>filetype:</td>
+                    <td>Searches for specific file types</td>
+                    <td>filetype:pdf "confidential"</td>
+                </tr>
+                <tr>
+                    <td>intitle:</td>
+                    <td>Searches for pages with specific words in the title</td>
+                    <td>intitle:"index of" admin</td>
+                </tr>
+                <tr>
+                    <td>inurl:</td>
+                    <td>Searches for pages with specific words in the URL</td>
+                    <td>inurl:admin inurl:login</td>
+                </tr>
+                <tr>
+                    <td>intext:</td>
+                    <td>Searches for pages containing specific text</td>
+                    <td>intext:"username" intext:"password"</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>Excludes specific words from results</td>
+                    <td>admin login -facebook</td>
+                </tr>
+                <tr>
+                    <td>"..."</td>
+                    <td>Searches for exact phrases</td>
+                    <td>"confidential company information"</td>
+                </tr>
+                <tr>
+                    <td>*</td>
+                    <td>Wildcard operator</td>
+                    <td>"employee * database"</td>
+                </tr>
+                <tr>
+                    <td>OR</td>
+                    <td>Shows results related to either term</td>
+                    <td>password OR credentials</td>
+                </tr>
+                <tr>
+                    <td>AND</td>
+                    <td>Shows results related to both terms</td>
+                    <td>admin AND password</td>
+                </tr>
+                <tr>
+                    <td>cache:</td>
+                    <td>Shows Google's cached version of a page</td>
+                    <td>cache:example.com/login</td>
+                </tr>
+            </table>
+            
+            <h3>Creating Complex Queries</h3>
+            <p>You can combine multiple operators to create highly targeted searches:</p>
+            <code>site:example.com filetype:pdf intext:"confidential" -policy</code>
+            <p>This would search for PDFs on example.com containing the word "confidential" but not "policy".</p>
+        </div>
+
+        <div id="GHDB" class="tabcontent">
+            <h2>Google Hacking Database (GHDB)</h2>
+            <p>The Google Hacking Database (GHDB) is a collection of Google dorks categorized by their purpose and potential impact. It's maintained by Offensive Security and serves as a repository of search queries that can be used to find vulnerable systems or sensitive information.</p>
+            
+            <h3>How to Access GHDB</h3>
+            <p>The GHDB is hosted on Offensive Security's Exploit Database website. You can access it at: <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">https://www.exploit-db.com/google-hacking-database</a></p>
+            
+            <h3>GHDB Categories</h3>
+            <ul>
+                <li><strong>Files Containing Usernames:</strong> Search strings that locate files containing username information</li>
+                <li><strong>Sensitive Directories:</strong> Queries that find potentially sensitive directories</li>
+                <li><strong>Web Server Detection:</strong> Searches that help identify web server types and versions</li>
+                <li><strong>Vulnerable Files:</strong> Queries that find potentially vulnerable files</li>
+                <li><strong>Vulnerable Servers:</strong> Searches that locate potentially vulnerable servers</li>
+                <li><strong>Error Messages:</strong> Queries that find error messages that might reveal sensitive information</li>
+                <li><strong>Files Containing Juicy Info:</strong> Searches for files containing potentially sensitive information</li>
+                <li><strong>Files Containing Passwords:</strong> Queries that find files containing password information</li>
+                <li><strong>Sensitive Online Shopping Info:</strong> Searches related to e-commerce vulnerabilities</li>
+            </ul>
+            
+            <h3>Using GHDB Responsibly</h3>
+            <p>The GHDB is a valuable resource for security professionals, but it can also be misused. Always:</p>
+            <ul>
+                <li>Only test systems you own or have explicit permission to test</li>
+                <li>Report vulnerabilities through proper channels</li>
+                <li>Use the information for educational purposes or to improve security</li>
+                <li>Follow responsible disclosure practices</li>
+            </ul>
+        </div>
+
+        <div id="Tool" class="tabcontent">
+            <h2>Google Dorking Tool</h2>
+            <p>Use this tool to create Google dork queries and search for information. Select a dorking technique, enter your keywords, and search. For Custom Query, enter multiple queries (one per line) to open each in a new tab. If tabs don't open, check your browser's popup blocker.</p>
+            
+            <div class="search-form">
+                <label for="dork-type">Select Dorking Technique:</label>
+                <select id="dork-type">
+                    <option value="site">site: (Search within a specific website)</option>
+                    <option value="filetype">filetype: (Search for specific file types)</option>
+                    <option value="intitle">intitle: (Search for words in page title)</option>
+                    <option value="inurl">inurl: (Search for words in URL)</option>
+                    <option value="intext">intext: (Search for words in page content)</option>
+                    <option value="custom">Custom Query (Advanced)</option>
+                </select>
+                
+                <div id="site-input" class="dork-specific-input">
+                    <label for="site-domain">Domain:</label>
+                    <input type="text" id="site-domain" placeholder="example.com">
+                </div>
+                
+                <div id="filetype-input" class="dork-specific-input" style="display:none;">
+                    <label for="file-type">File Type:</label>
+                    <select id="file-type">
+                        <option value="pdf">PDF</option>
+                        <option value="doc">DOC</option>
+                        <option value="docx">DOCX</option>
+                        <option value="xls">XLS</option>
+                        <option value="xlsx">XLSX</option>
+                        <option value="ppt">PPT</option>
+                        <option value="txt">TXT</option>
+                        <option value="csv">CSV</option>
+                        <option value="sql">SQL</option>
+                        <option value="php">PHP</option>
+                        <option value="log">LOG</option>
+                        <option value="env">.env</option>
+                        <option value="conf">CONF</option>
+                    </select>
+                </div>
+                
+                <div id="custom-input" class="dork-specific-input" style="display:none;">
+                    <label for="custom-query">Custom Queries (one per line):</label>
+                    <textarea id="custom-query" rows="5" placeholder='site:example.com filetype:pdf "confidential"\nsite:*.edu inurl:login'></textarea>
+                </div>
+                
+                <label for="search-keywords">Keywords:</label>
+                <input type="text" id="search-keywords" placeholder="Enter search keywords">
+                
+                <button onclick="performSearch()">Search</button>
+            </div>
+            
+            <div class="card">
+                <h3>Generated Query</h3>
+                <div id="query-display">site:example.com your_keywords</div>
+            </div>
+            
+            <div class="results">
+                <h3>Search Results</h3>
+                <p>When you click Search, you'll be redirected to Google with your dorking query. For custom queries, each query opens in a new tab. If tabs don't open, check your browser's popup blocker.</p>
+                <div id="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Google Dorking Educational Website | For Security Education Purposes Only</p>
+        <p>Remember to use these techniques ethically and responsibly</p>
+    </footer>
+
+    <script>
+        // Canvas animation
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = [];
+        const particleCount = 50;
+        const connectionDistance = 150;
+        const colors = ['#4285f4', '#34a853', '#fbbc05', '#ea4335', '#5f6368'];
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 5 + 2,
+                speedX: Math.random() * 1 - 0.5,
+                speedY: Math.random() * 1 - 0.5,
+                color: colors[Math.floor(Math.random() * colors.length)],
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach((particle) => {
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+
+                if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+                if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+
+                particles.forEach((other) => {
+                    const dx = particle.x - other.x;
+                    const dy = particle.y - other.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist / connectionDistance})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+        }
+
+        animate();
+
+        // Handle tab navigation
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Handle dork type selection changes
+        document.getElementById('dork-type').addEventListener('change', function() {
+            var dorkType = this.value;
+            
+            // Hide all specific input sections
+            var specificInputs = document.getElementsByClassName('dork-specific-input');
+            for (var i = 0; i < specificInputs.length; i++) {
+                specificInputs[i].style.display = 'none';
+            }
+            
+            // Show the relevant input section
+            if (dorkType === 'site') {
+                document.getElementById('site-input').style.display = 'block';
+            } else if (dorkType === 'filetype') {
+                document.getElementById('filetype-input').style.display = 'block';
+            } else if (dorkType === 'custom') {
+                document.getElementById('custom-input').style.display = 'block';
+            }
+            
+            updateQueryDisplay();
+        });
+        
+        // Update the displayed query when inputs change
+        function updateQueryDisplay() {
+            var dorkType = document.getElementById('dork-type').value;
+            var keywords = document.getElementById('search-keywords').value || 'your_keywords';
+            var queryDisplay = document.getElementById('query-display');
+            
+            if (dorkType === 'site') {
+                var domain = document.getElementById('site-domain').value || 'example.com';
+                queryDisplay.textContent = `site:${domain} ${keywords}`;
+            } else if (dorkType === 'filetype') {
+                var fileType = document.getElementById('file-type').value;
+                queryDisplay.textContent = `filetype:${fileType} ${keywords}`;
+            } else if (dorkType === 'intitle') {
+                queryDisplay.textContent = `intitle:${keywords}`;
+            } else if (dorkType === 'inurl') {
+                queryDisplay.textContent = `inurl:${keywords}`;
+            } else if (dorkType === 'intext') {
+                queryDisplay.textContent = `intext:${keywords}`;
+            } else if (dorkType === 'custom') {
+                var customQueries = document.getElementById('custom-query').value.trim();
+                if (customQueries) {
+                    var queries = customQueries.split('\n').filter(q => q.trim() !== '');
+                    queryDisplay.innerHTML = queries.map(q => `<div>${q}</div>`).join('');
+                } else {
+                    queryDisplay.textContent = 'site:example.com filetype:pdf "confidential"';
+                }
+            }
+        }
+        
+        // Add event listeners to update the query display
+        document.getElementById('search-keywords').addEventListener('input', updateQueryDisplay);
+        document.getElementById('site-domain').addEventListener('input', updateQueryDisplay);
+        document.getElementById('file-type').addEventListener('change', updateQueryDisplay);
+        document.getElementById('custom-query').addEventListener('input', updateQueryDisplay);
+        
+        // Perform the search
+        function performSearch() {
+            var dorkType = document.getElementById('dork-type').value;
+            var keywords = document.getElementById('search-keywords').value;
+            
+            if (dorkType === 'custom') {
+                var customQueries = document.getElementById('custom-query').value.trim();
+                if (customQueries) {
+                    var queries = customQueries.split('\n').filter(q => q.trim() !== '');
+                    if (queries.length === 0) {
+                        alert('Please enter at least one valid custom query.');
+                        return;
+                    }
+                    let openedTabs = 0;
+                    queries.forEach((query, index) => {
+                        setTimeout(() => {
+                            try {
+                                var encodedQuery = encodeURIComponent(query.trim());
+                                var newTab = window.open(`https://www.google.com/search?q=${encodedQuery}`, '_blank');
+                                if (newTab) {
+                                    openedTabs++;
+                                } else {
+                                    console.warn(`Failed to open tab for query: ${query}`);
+                                }
+                            } catch (e) {
+                                console.error(`Error opening tab for query: ${query}`, e);
+                            }
+                        }, index * 200);
+                    });
+                    setTimeout(() => {
+                        if (openedTabs < queries.length) {
+                            alert('Some tabs may not have opened. Please check your browser\'s popup blocker settings.');
+                        }
+                    }, queries.length * 200 + 500);
+                } else {
+                    alert('Please enter at least one custom query.');
+                }
+            } else {
+                var query;
+                if (dorkType === 'site') {
+                    var domain = document.getElementById('site-domain').value;
+                    query = `site:${domain} ${keywords}`;
+                } else if (dorkType === 'filetype') {
+                    var fileType = document.getElementById('file-type').value;
+                    query = `filetype:${fileType} ${keywords}`;
+                } else if (dorkType === 'intitle') {
+                    query = `intitle:${keywords}`;
+                } else if (dorkType === 'inurl') {
+                    query = `inurl:${keywords}`;
+                } else if (dorkType === 'intext') {
+                    query = `intext:${keywords}`;
+                }
+                
+                var encodedQuery = encodeURIComponent(query);
+                window.open(`https://www.google.com/search?q=${encodedQuery}`, '_blank');
+            }
+        }
+        
+        updateQueryDisplay();
+    </script>
+</body>
+</html>
